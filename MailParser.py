@@ -68,4 +68,5 @@ if __name__ == '__main__':
         mail=mail_spider.craw(xing,ming)
         print(mail)
 
+    driver.quit()
 

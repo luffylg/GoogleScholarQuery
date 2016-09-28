@@ -14,8 +14,10 @@ def read():
         Namedict={}
         FirstName=table.cell(i,2).value
         LastName=table.cell(i,3).value
+        mail=table.cell(i,6).value
         Namedict["Firstname"]=FirstName
         Namedict["Lastname"]=LastName
+        Namedict["mail"]=mail
         #print("FirstName:"+FirstName+"  LastName:"+LastName)
         # table.put_cell(i, 9, ctype, i, xf)
         # print(table.cell(i,9))

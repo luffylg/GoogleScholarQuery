@@ -86,6 +86,6 @@ if __name__ == '__main__':
         tital_paper, highest_citation=mail_spider.craw(mail,names)
         names["tital_paper"]=tital_paper
         names["highest_citation"]=highest_citation
-        print('{0};{1};{2};'.format(names["Firstname"],names["Lastname"],tital_paper,highest_citation))
+        print('{0};{1};{2};{3}'.format(names["Firstname"],names["Lastname"],tital_paper,highest_citation))
 
     # driver.quit()
