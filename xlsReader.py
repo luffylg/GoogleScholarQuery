@@ -10,7 +10,7 @@ def read():
     xf = 0
     Namelist=[]
 
-    for i in range(72,nrows):
+    for i in range(1,nrows):
         Namedict={}
         FirstName=table.cell(i,2).value
         LastName=table.cell(i,3).value

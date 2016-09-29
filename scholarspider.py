@@ -18,7 +18,7 @@ class SpiderMain(object):
 
     def craw(self, mail,names):
         try:
-            tital_paper=0
+            total_paper=0
             highest_citation=0
             zjuverify(self.driver)
             ele=self.driver.find_element_by_name('q')
@@ -51,7 +51,7 @@ class SpiderMain(object):
                         zjuverify(self.driver)
 
                         try:
-                            tital_paper,highest_citation=getnums(driver)
+                            total_paper,highest_citation=getnums(driver)
                         except Exception as e:
                             print("getnums method error")
                             driver.back()
@@ -59,26 +59,26 @@ class SpiderMain(object):
                             zjuverify(self.driver)
 
                             self.driver.find_element_by_name('q').clear()
-                            return tital_paper, highest_citation
+                            return total_paper, highest_citation
                         driver.back()
 
                         zjuverify(self.driver)
 
                         break
-                if tital_paper!=0 and highest_citation!=0:
+                if total_paper!=0 and highest_citation!=0:
                     break
-            if tital_paper ==0 and highest_citation ==0:
+            if total_paper ==0 and highest_citation ==0:
                 # 如果找不到个人学术主页，以搜到的结果数为总文章数
                 pattern=re.compile(r'\d+')
                 st=driver.find_element_by_xpath("//div[@id='gs_ab_md']").text
-                tital_paper=re.findall(pattern,st)[0]
+                total_paper=re.findall(pattern,st)[0]
             # driver.back()
             self.driver.find_element_by_name('q').clear()
         except Exception as e:
             print(e)
             self.driver.find_element_by_name('q').clear()
-            return tital_paper, highest_citation
-        return tital_paper, highest_citation
+            return total_paper, highest_citation
+        return total_paper, highest_citation
 def proxy():
     # 设置代理
     PROXY="127.0.0.1:1085"
@@ -104,8 +104,8 @@ def getnums(driver):
             driver.find_element_by_id('gsc_bpf_more').click()
             time.sleep(1)
             # driver.implicitly_wait(10)
-    tital_paper=driver.find_element_by_id('gsc_a_nn').text.replace(' ','').replace('1–','')
-    return tital_paper, highest_citation
+    total_paper=driver.find_element_by_id('gsc_a_nn').text.replace(' ','').replace('1–','')
+    return total_paper, highest_citation
 
 # 每次发生页面跳转时都要判断需不需要验证
 def zjuverify(driver):
@@ -130,10 +130,10 @@ if __name__ == '__main__':
     for names in Namelist:
         csv=open('res.csv','a',encoding='utf-8')
         mail=names["mail"].strip().split(';')[0]  # 有的邮箱有多个，以分号分隔，取第一个
-        tital_paper, highest_citation=mail_spider.craw(mail,names)
-        names["tital_paper"]=tital_paper
+        total_paper, highest_citation=mail_spider.craw(mail, names)
+        names["tital_paper"]=total_paper
         names["highest_citation"]=highest_citation
-        print('{0};{1};{2};{3}'.format(names["Firstname"],names["Lastname"],tital_paper,highest_citation))
-        csv.write('{0};{1};{2};{3}\n'.format(names["Firstname"],names["Lastname"],tital_paper,highest_citation))
+        print('{0};{1};{2};{3}'.format(names["Firstname"], names["Lastname"], total_paper, highest_citation))
+        csv.write('{0};{1};{2};{3}\n'.format(names["Firstname"], names["Lastname"], total_paper, highest_citation))
     csv.close()
     driver.quit()
