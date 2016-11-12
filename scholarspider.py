@@ -31,47 +31,48 @@ class SpiderMain(object):
             #   EC.presence_of_element_located((By.CLASS_NAME, "button"))
             # )
             # 遍历条目
-            rersults=self.driver.find_elements_by_xpath("//div[@id='gs_ccl_results']/div[@class='gs_r']")
-            for j in range(0,len(rersults)):
-                # re=self.driver.find_elements_by_xpath("//div[@id='gs_ccl_results']/div[@class='gs_r']")[j]
-                # alist=re.find_elements_by_xpath("/div[@class='gs_ri']/div[@class='gs_a']/a")
-
-                alist=self.driver.find_elements_by_xpath("//div[@id='gs_ccl_results']/div[{0}]/div[@class='gs_ri']/div[@class='gs_a']/a".format(j+1))
-                for i in range(0,len(alist)):
-                    a=self.driver.find_elements_by_xpath("//div[@id='gs_ccl_results']/div[{0}]/div[@class='gs_ri']/div[@class='gs_a']/a".format(j+1))[i]
-                    href=a.get_attribute('href')
-                    name=a.text.strip()
-                    ls=name.split()
-                    # 姓名坑，拼接首字母字符串来做不准确的识别
-                    # print((names["Firstname"][0]+names["Lastname"][0:2]).lower())
-                    # print((ls[0][0]+ls[1][0:2]).lower())
-                    if (names["Firstname"][0]+names["Lastname"][0:2]).lower() == (ls[0][0]+ls[1][0:2]).lower():
-                        driver.get(href)
-
-                        zjuverify(self.driver)
-
-                        try:
-                            total_paper,highest_citation=getnums(driver)
-                        except Exception as e:
-                            print("getnums method error")
-                            driver.back()
-
-                            zjuverify(self.driver)
-
-                            self.driver.find_element_by_name('q').clear()
-                            return total_paper, highest_citation
-                        driver.back()
-
-                        zjuverify(self.driver)
-
-                        break
-                if total_paper!=0 and highest_citation!=0:
-                    break
-            if total_paper ==0 and highest_citation ==0:
+            rersults=self.driver.find_elements_by_xpath("//div[@id='gs_ccl_results']/div[@class='gs_r'][1]//div[@class='gs_fl']/a[1]")
+            highest_citation=re.findall(r'\d+',rersults[0].text)[0]
+            # for j in range(0,len(rersults)):
+            #     # re=self.driver.find_elements_by_xpath("//div[@id='gs_ccl_results']/div[@class='gs_r']")[j]
+            #     # alist=re.find_elements_by_xpath("/div[@class='gs_ri']/div[@class='gs_a']/a")
+            #
+            #     alist=self.driver.find_elements_by_xpath("//div[@id='gs_ccl_results']/div[{0}]/div[@class='gs_ri']/div[@class='gs_a']/a".format(j+1))
+            #     for i in range(0,len(alist)):
+            #         a=self.driver.find_elements_by_xpath("//div[@id='gs_ccl_results']/div[{0}]/div[@class='gs_ri']/div[@class='gs_a']/a".format(j+1))[i]
+            #         href=a.get_attribute('href')
+            #         name=a.text.strip()
+            #         ls=name.split()
+            #         # 姓名坑，拼接首字母字符串来做不准确的识别
+            #         # print((names["Firstname"][0]+names["Lastname"][0:2]).lower())
+            #         # print((ls[0][0]+ls[1][0:2]).lower())
+            #         if (names["Firstname"][0]+names["Lastname"][0:2]).lower() == (ls[0][0]+ls[1][0:2]).lower():
+            #             driver.get(href)
+            #
+            #             zjuverify(self.driver)
+            #
+            #             try:
+            #                 total_paper,highest_citation=getnums(driver)
+            #             except Exception as e:
+            #                 print("getnums method error")
+            #                 driver.back()
+            #
+            #                 zjuverify(self.driver)
+            #
+            #                 self.driver.find_element_by_name('q').clear()
+            #                 return total_paper, highest_citation
+            #             driver.back()
+            #
+            #             zjuverify(self.driver)
+            #
+            #             break
+            #     if total_paper!=0 and highest_citation!=0:
+            #         break
+            # if total_paper ==0 and highest_citation ==0:
                 # 如果找不到个人学术主页，以搜到的结果数为总文章数
-                pattern=re.compile(r'\d+')
-                st=driver.find_element_by_xpath("//div[@id='gs_ab_md']").text
-                total_paper=re.findall(pattern,st)[0]
+            pattern=re.compile(r'\d+')
+            st=driver.find_element_by_xpath("//div[@id='gs_ab_md']").text
+            total_paper=re.findall(pattern,st)[0]
             # driver.back()
             self.driver.find_element_by_name('q').clear()
         except Exception as e:
@@ -81,7 +82,7 @@ class SpiderMain(object):
         return total_paper, highest_citation
 def proxy():
     # 设置代理
-    PROXY="127.0.0.1:1085"
+    PROXY="127.0.0.1:1080"
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--proxy-server=http://%s' % PROXY)
     chrome = webdriver.Chrome(chrome_options=chrome_options)
@@ -116,8 +117,10 @@ def zjuverify(driver):
         time.sleep(2)
 
 if __name__ == '__main__':
-    Namelist=xlsReader.read() # 获取姓名表
-    driver=proxy()
+    # Namelist=xlsReader.read() # 获取姓名表
+
+    # driver=proxy()
+    driver=webdriver.Chrome()
     driver.get('https://g.zju.education/extdomains/scholar.google.com/schhp?hl=zh-CN')
     zjuverify(driver)
     # element = WebDriverWait(driver, 100).until(
@@ -126,7 +129,9 @@ if __name__ == '__main__':
     # driver.implicitly_wait(20)
     mail_spider=SpiderMain(driver)
     # 不加encoding可能出现编码错误
+
     csv=open('res.csv','w',encoding='utf-8')
+    Namelist=[{"mail":'zhou@njit.edu',"Firstname":'1',"Lastname":'1'},{"mail":"fzhang35@gmail.com","Firstname":'2',"Lastname":'2'}]
     for names in Namelist:
         csv=open('res.csv','a',encoding='utf-8')
         mail=names["mail"].strip().split(';')[0]  # 有的邮箱有多个，以分号分隔，取第一个
